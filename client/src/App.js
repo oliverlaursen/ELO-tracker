@@ -160,9 +160,11 @@ function Users({ users, setUsers }) {
 		FetchUsers(setUsers);
 	}, []);
 
-	const handleRemoveUser = (e) => {
+	const handleRemoveUser = async (e) => {
 		e.preventDefault();
-		RemoveUser(e.target.value);
+		let user=e.target.dataset.value;
+		await RemoveUser(user);
+		await FetchUsers(setUsers);
 	}
 
 	return (
@@ -170,7 +172,7 @@ function Users({ users, setUsers }) {
 			<h1 className='title has-text-centered'>Users</h1>
 			<ul className='is-multiline'>
 				{users.map(user => (
-					<li className='box'>
+					<li key={user.name} className='box'>
 						<div className='columns is-mobile'>
 							<div className='column'>
 								<Link to={`/users/${user.name}`} key={user.name} className='has-text-left'> {user.name}
@@ -192,17 +194,6 @@ function Users({ users, setUsers }) {
 	);
 }
 
-const RemoveUser = async (name) => {
-	await fetch("http://" + PUBLIC_IP + ":9000/removeUser", {
-			method: "POST",
-			headers: { "Content-Type": "application/json", },
-			body: JSON.stringify({name})
-		})
-			.then((response) => response.json())
-			.then((data) => console.log(data))
-			.catch((error) => console.error(error));
-}
-
 function MatchDetails({ match, deleteMatch }) {
 	let date = new Date(match.timestamp)
 	const handleDeleteClick = () => {
@@ -220,7 +211,7 @@ function MatchDetails({ match, deleteMatch }) {
 					</div>
 				</div>
 				<div className='level-right'>
-					<button className='button is-danger' onClick={handleDeleteClick} data-value={match.timestamp}>Delete</button>
+					<button className='button is-danger' onClick={handleDeleteClick}>Delete</button>
 				</div>
 			</div>
 		</div>
@@ -255,6 +246,16 @@ const FetchUsers = async (setUsers) => {
 	await fetch("http://" + PUBLIC_IP + ":9000/users")
 		.then((res) => res.json())
 		.then((data) => setUsers(data))
+}
+
+const RemoveUser = async (name) => {
+	await fetch("http://" + PUBLIC_IP + ":9000/removeUser", {
+			method: "POST",
+			headers: { "Content-Type": "application/json", },
+			body: JSON.stringify({name})
+		})
+			.then((response) => response.json())
+			.catch((error) => console.error(error));
 }
 
 function App() {

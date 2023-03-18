@@ -15,7 +15,6 @@ router.post('/', function(req, res, next) {
 
     // Get the user in question
     const {name} = req.body;
-    console.log(req.body);
     updatedUsers = users.filter(u => u.name !== name)
     fs.writeFile('data/users.json', JSON.stringify(updatedUsers), (err) => {
       if (err) {
