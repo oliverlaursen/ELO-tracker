@@ -175,7 +175,7 @@ function Users({ users, setUsers }) {
 			<ul className='is-multiline'>
 				{users.map(user => (
 					<li key={user.name} className='box'>
-						<div className='columns is-mobile'>
+						<div className='columns is-mobile is-vcentered'>
 							<div className='column'>
 								<Link to={`/users/${user.name}`} key={user.name} className='has-text-left'> {user.name}
 								</Link>
