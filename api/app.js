@@ -9,6 +9,9 @@ var usersRouter = require('./routes/users');
 var testAPIRouter = require("./routes/testAPI");
 var addUser = require("./routes/addUser")
 var removeUser = require("./routes/removeUser")
+var matches = require("./routes/matches")
+var addMatch = require("./routes/addMatch")
+var removeMatch = require("./routes/removeMatch")
 var app = express();
 
 const cors=require("cors");
@@ -35,6 +38,9 @@ app.use('/users', usersRouter);
 app.use("/testAPI", testAPIRouter);
 app.use("/addUser", addUser);
 app.use("/removeUser",removeUser);
+app.use("/matches", matches);
+app.use("/addMatch",addMatch);
+app.use("/removeMatch", removeMatch);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

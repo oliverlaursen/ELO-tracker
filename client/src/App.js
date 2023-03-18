@@ -34,14 +34,7 @@ function AddUser() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		await fetch("http://" + PUBLIC_IP + ":9000/addUser", {
-			method: "POST",
-			headers: { "Content-Type": "application/json", },
-			body: JSON.stringify(user)
-		})
-			.then((response) => response.json())
-			.then((data) => console.log(data))
-			.catch((error) => console.error(error));
+		addUser(user)
 		setRating("");
 		setName("");
 	}
@@ -66,15 +59,21 @@ function AddUser() {
 	);
 }
 
-function AddMatch({ addMatch, setShowMatchForm, users }) {
+function AddMatch({ setShowMatchForm, users }) {
 	const [player1, setPlayer1] = useState('');
 	const [player2, setPlayer2] = useState('');
 	const [player1Goals, setPlayer1Goals] = useState(0);
 	const [player2Goals, setPlayer2Goals] = useState(0);
+	const match = {
+		player1:player1,
+		player2,player2,
+		player1Goals:player1Goals,
+		player2Goals:player2Goals
+	}
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		addMatch({ player1, player2, player1Goals, player2Goals });
+		addMatch(match);
 		setShowMatchForm(false);
 	};
 
@@ -131,40 +130,43 @@ function AddMatch({ addMatch, setShowMatchForm, users }) {
 	);
 }
 
-function Home({ addMatch, users }) {
+function Home({ users }) {
 	const [showUserForm, setShowUserForm] = useState(false);
 	const [showMatchForm, setShowMatchForm] = useState(false);
 
 	return (
 		<div>
 			<button className='button' onClick={() => setShowMatchForm(!showMatchForm)}>Add match</button>
-			{showMatchForm && <AddMatch addMatch={addMatch} setShowMatchForm={setShowMatchForm} users={users} />}
+			{showMatchForm && <AddMatch setShowMatchForm={setShowMatchForm} users={users} />}
 			<button className='button' onClick={() => setShowUserForm(!showUserForm)}>Add user</button>
 			{showUserForm && <AddUser />}
 		</div>
 	);
 }
 
-function Matches({ matches, deleteMatch }) {
+function Matches({ matches, setMatches }) {
+	useEffect(() => {
+		fetchMatches(setMatches);
+	}, []);
 	return (
 		<div>
 			<h1 className='title has-text-centered'>Matches</h1>
 			{matches.map(match => (
-				<MatchDetails match={match} key={match.timestamp} deleteMatch={deleteMatch} />))}
+				<MatchDetails match={match} key={match.timestamp} setMatches={setMatches} />))}
 		</div>
 	);
 }
 
 function Users({ users, setUsers }) {
 	useEffect(() => {
-		FetchUsers(setUsers);
+		fetchUsers(setUsers);
 	}, []);
 
 	const handleRemoveUser = async (e) => {
 		e.preventDefault();
-		let user=e.target.dataset.value;
-		await RemoveUser(user);
-		await FetchUsers(setUsers);
+		let user = e.target.dataset.value;
+		await removeUser(user);
+		await fetchUsers(setUsers);
 	}
 
 	return (
@@ -180,7 +182,7 @@ function Users({ users, setUsers }) {
 							</div>
 							<div className='column'>
 								<p className='has-text-centered'>ELO:{user.rating}</p>
-								
+
 							</div>
 							<div className='column'>
 								<button className='button is-danger is-pulled-right' data-value={user.name} onClick={handleRemoveUser}>Delete</button>
@@ -194,10 +196,12 @@ function Users({ users, setUsers }) {
 	);
 }
 
-function MatchDetails({ match, deleteMatch }) {
+function MatchDetails({ match, setMatches }) {
 	let date = new Date(match.timestamp)
-	const handleDeleteClick = () => {
-		deleteMatch(match.timestamp);
+	const handleDeleteClick = async (e) => {
+		e.preventDefault();
+		await removeMatch(match.timestamp);
+		await fetchMatches(setMatches)
 	};
 
 	return (
@@ -242,54 +246,73 @@ function UserDetail({ matches, users }) {
 	);
 }
 
-const FetchUsers = async (setUsers) => {
+const fetchUsers = async (setUsers) => {
 	await fetch("http://" + PUBLIC_IP + ":9000/users")
 		.then((res) => res.json())
 		.then((data) => setUsers(data))
 }
 
-const RemoveUser = async (name) => {
+const removeUser = async (name) => {
 	await fetch("http://" + PUBLIC_IP + ":9000/removeUser", {
-			method: "POST",
-			headers: { "Content-Type": "application/json", },
-			body: JSON.stringify({name})
-		})
-			.then((response) => response.json())
-			.catch((error) => console.error(error));
+		method: "POST",
+		headers: { "Content-Type": "application/json", },
+		body: JSON.stringify({ name })
+	})
+		.then((response) => response.json())
+		.catch((error) => console.error(error));
 }
+
+const addUser = async (user) => {
+	await fetch("http://" + PUBLIC_IP + ":9000/addUser", {
+		method: "POST",
+		headers: { "Content-Type": "application/json", },
+		body: JSON.stringify(user)
+	})
+		.then((response) => response.json())
+		.catch((error) => console.error(error));
+}
+
+const fetchMatches = async (setMatches) => {
+	await fetch("http://" + PUBLIC_IP + ":9000/matches")
+	.then((res) => res.json())
+	.then((data) => setMatches(data))
+}
+
+const addMatch = async (match) => {
+	await fetch("http://" + PUBLIC_IP + ":9000/addMatch", {
+		method: "POST",
+		headers: { "Content-Type": "application/json", },
+		body: JSON.stringify(match)
+	})
+		.then((response) => response.json())
+		.catch((error) => console.error(error));
+}
+
+const removeMatch = async (timestamp) => {
+	await fetch("http://" + PUBLIC_IP + ":9000/removeMatch", {
+		method: "POST",
+		headers: { "Content-Type": "application/json", },
+		body: JSON.stringify({ timestamp })
+	})
+		.then((response) => response.json())
+		.catch((error) => console.error(error));
+}
+
 
 function App() {
 	const [users, setUsers] = useState([])
 	const [isActive, setIsActive] = useState(false);
-	const [matches, setMatches] = useState(JSON.parse(localStorage.getItem('matches')) || []);
-
+	const [matches, setMatches] = useState([]);
 
 	useEffect(() => {
-		FetchUsers(setUsers);
+		fetchUsers(setUsers);
 	}, []);
-
-
+	useEffect(() => {
+		fetchMatches(setMatches);
+	}, []);
 
 	const toggleMenu = () => {
 		setIsActive(!isActive);
-	}
-
-	function deleteMatch(timestamp) {
-		const updatedMatches = matches.filter(match => match.timestamp !== timestamp);
-		setMatches(updatedMatches);
-		localStorage.setItem('matches', JSON.stringify(updatedMatches));
-	}
-
-	function addMatch(match) {
-		const updatedMatches = [...matches, {
-			player1: match.player1,
-			player2: match.player2,
-			player1Goals: match.player1Goals,
-			player2Goals: match.player2Goals,
-			timestamp: Date.now()
-		}];
-		setMatches(updatedMatches);
-		localStorage.setItem('matches', JSON.stringify(updatedMatches));
 	}
 
 	return (
@@ -311,10 +334,10 @@ function App() {
 				</div>
 			</nav>
 			<Routes>
-				<Route exact path="/" element={<Home addMatch={addMatch} users={users} />} />
+				<Route exact path="/" element={<Home users={users} />} />
 				<Route path="/users" element={<Users users={users} setUsers={setUsers} />} />
 				<Route path="/users/:name" element={<UserDetail matches={matches} users={users} />} />
-				<Route path="/matches" element={<Matches matches={matches} deleteMatch={deleteMatch} />} />
+				<Route path="/matches" element={<Matches matches={matches} setMatches={setMatches} />} />
 			</Routes>
 		</BrowserRouter>
 	);
