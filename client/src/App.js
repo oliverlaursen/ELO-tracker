@@ -65,10 +65,10 @@ function AddMatch({ setShowMatchForm, users }) {
 	const [player1Goals, setPlayer1Goals] = useState(0);
 	const [player2Goals, setPlayer2Goals] = useState(0);
 	const match = {
-		player1:player1,
-		player2,player2,
-		player1Goals:player1Goals,
-		player2Goals:player2Goals
+		player1: player1,
+		player2, player2,
+		player1Goals: player1Goals,
+		player2Goals: player2Goals
 	}
 
 	const handleSubmit = (e) => {
@@ -206,16 +206,16 @@ function MatchDetails({ match, setMatches }) {
 
 	return (
 		<div className='box'>
-			<div className='level'>
-				<div className='level-left'>
+			<div className='columns is-mobile is-vcentered'>
+				<div className='column'>
 					<div>
 						<p>{match.player1} VS {match.player2}</p>
 						<p>Score: {match.player1Goals + " - " + match.player2Goals}</p>
 						<p>{date.getHours() + ":" + date.getMinutes() + ", " + date.toDateString()}</p>
 					</div>
 				</div>
-				<div className='level-right'>
-					<button className='button is-danger' onClick={handleDeleteClick}>Delete</button>
+				<div className='column'>
+					<button className='button is-danger is-pulled-right' onClick={handleDeleteClick}>Delete</button>
 				</div>
 			</div>
 		</div>
@@ -274,8 +274,8 @@ const addUser = async (user) => {
 
 const fetchMatches = async (setMatches) => {
 	await fetch("http://" + PUBLIC_IP + ":9000/matches")
-	.then((res) => res.json())
-	.then((data) => setMatches(data))
+		.then((res) => res.json())
+		.then((data) => setMatches(data))
 }
 
 const addMatch = async (match) => {
