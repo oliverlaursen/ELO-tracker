@@ -1,15 +1,14 @@
 import { BrowserRouter, Routes, Route, Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-
+const PUBLIC_IP = "84.238.79.88";
 
 function GoalSlider(props) {
-
 	const handleChange = (event) => {
 		props.setValue(event.target.value);
 	};
 
 	return (
-		<div className="slider-container">
+		<div className="slider-container level-item">
 			<input
 				type="range"
 				min="0"
@@ -26,28 +25,27 @@ function GoalSlider(props) {
 function AddUser() {
 	const [name, setName] = useState("");
 	const [rating, setRating] = useState("");
+	const user = {
+		name: name,
+		gamesWon: 0,
+		gamesLost: 0,
+		rating: rating
+	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		fetch("http://localhost:9000/addUser", {
+		await fetch("http://" + PUBLIC_IP + ":9000/addUser", {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				name: name,
-				gamesWon: 0,
-				gamesLost: 0,
-				rating: rating
-			}),
+			headers: { "Content-Type": "application/json", },
+			body: JSON.stringify(user)
 		})
 			.then((response) => response.json())
 			.then((data) => console.log(data))
 			.catch((error) => console.error(error));
-
-			setRating("");
-			setName("");
+		setRating("");
+		setName("");
 	}
+
 	const handleNameChange = (event) => {
 		setName(event.target.value);
 	};
@@ -67,6 +65,7 @@ function AddUser() {
 		</form>
 	);
 }
+
 function AddMatch({ addMatch, setShowMatchForm, users }) {
 	const [player1, setPlayer1] = useState('');
 	const [player2, setPlayer2] = useState('');
@@ -83,41 +82,43 @@ function AddMatch({ addMatch, setShowMatchForm, users }) {
 		<form onSubmit={handleSubmit} className="box">
 			<div className='field'>
 				<label className='label'>Player 1</label>
-				<div className='control'>
-					<div className='select'>
-						<select value={player1} onChange={(e) => setPlayer1(e.target.value)} required>
-							<option value=''>Select player</option>
-							{users.map((player) => (
-								<option key={player.name} value={player.name}>
-									{player.name}
-								</option>
-							))}
-						</select>
-					</div>
+				<div className='select'>
+					<select value={player1} onChange={(e) => setPlayer1(e.target.value)} required>
+						<option value=''>Select player</option>
+						{users.map((player) => (
+							<option key={player.name} value={player.name}>
+								{player.name}
+							</option>))}
+					</select>
 				</div>
 			</div>
 			<div className='field'>
 				<label className='label'>Player 2</label>
-				<div className='control'>
-					<div className='select'>
-						<select value={player2} onChange={(e) => setPlayer2(e.target.value)} required	>
-							<option value=''>Select player</option>
-							{users.map((player) => (
-								<option key={player.name} value={player.name}>
-									{player.name}
-								</option>
-							))}
-						</select>
+				<div className='select'>
+					<select value={player2} onChange={(e) => setPlayer2(e.target.value)} required>
+						<option value=''>Select player</option>
+						{users.map((player) => (
+							<option key={player.name} value={player.name}>
+								{player.name}
+							</option>))}
+					</select>
+				</div>
+			</div>
+			<div className='level'>
+				<div className='field level-left'>
+					<div>
+						<label className='label level-item'>Player 1 goals</label>
+						<GoalSlider value={player1Goals} setValue={setPlayer1Goals} />
 					</div>
 				</div>
 			</div>
-			<div className='field'>
-				<label className='label'>Player 1 goals</label>
-				<GoalSlider value={player1Goals} setValue={setPlayer1Goals} />
-			</div>
-			<div className='field'>
-				<label className='label'>Player 2 goals</label>
-				<GoalSlider value={player2Goals} setValue={setPlayer2Goals} />
+			<div className='level'>
+				<div className='field level-left'>
+					<div>
+						<label className='label level-item'>Player 2 goals</label>
+						<GoalSlider value={player2Goals} setValue={setPlayer2Goals} />
+					</div>
+				</div>
 			</div>
 			<div className='field'>
 				<div className='control'>
@@ -154,20 +155,53 @@ function Matches({ matches, deleteMatch }) {
 	);
 }
 
-function Users({ users }) {
+function Users({ users, setUsers }) {
+	useEffect(() => {
+		FetchUsers(setUsers);
+	}, []);
+
+	const handleRemoveUser = (e) => {
+		e.preventDefault();
+		RemoveUser(e.target.value);
+	}
+
 	return (
 		<div>
 			<h1 className='title has-text-centered'>Users</h1>
-			<div className='columns'>
+			<ul className='is-multiline'>
 				{users.map(user => (
-					<Link to={`/users/${user.name}`} key={user.name} className='column button'> {user.name}
-					</Link>
+					<li className='box'>
+						<div className='columns is-mobile'>
+							<div className='column'>
+								<Link to={`/users/${user.name}`} key={user.name} className='has-text-left'> {user.name}
+								</Link>
+							</div>
+							<div className='column'>
+								<p className='has-text-centered'>ELO:{user.rating}</p>
+								
+							</div>
+							<div className='column'>
+								<button className='button is-danger is-pulled-right' data-value={user.name} onClick={handleRemoveUser}>Delete</button>
+							</div>
+						</div>
+					</li>
+
 				))}
-			</div>
+			</ul>
 		</div>
 	);
 }
 
+const RemoveUser = async (name) => {
+	await fetch("http://" + PUBLIC_IP + ":9000/removeUser", {
+			method: "POST",
+			headers: { "Content-Type": "application/json", },
+			body: JSON.stringify({name})
+		})
+			.then((response) => response.json())
+			.then((data) => console.log(data))
+			.catch((error) => console.error(error));
+}
 
 function MatchDetails({ match, deleteMatch }) {
 	let date = new Date(match.timestamp)
@@ -217,17 +251,20 @@ function UserDetail({ matches, users }) {
 	);
 }
 
+const FetchUsers = async (setUsers) => {
+	await fetch("http://" + PUBLIC_IP + ":9000/users")
+		.then((res) => res.json())
+		.then((data) => setUsers(data))
+}
+
 function App() {
 	const [users, setUsers] = useState([])
 	const [isActive, setIsActive] = useState(false);
 	const [matches, setMatches] = useState(JSON.parse(localStorage.getItem('matches')) || []);
 
+
 	useEffect(() => {
-		const FetchUsers = async () => {
-			await fetch("http://localhost:9000/users")
-				.then((res) => res.json())
-				.then((data) => setUsers(data))
-		}; FetchUsers();
+		FetchUsers(setUsers);
 	}, []);
 
 
@@ -274,7 +311,7 @@ function App() {
 			</nav>
 			<Routes>
 				<Route exact path="/" element={<Home addMatch={addMatch} users={users} />} />
-				<Route path="/users" element={<Users users={users} />} />
+				<Route path="/users" element={<Users users={users} setUsers={setUsers} />} />
 				<Route path="/users/:name" element={<UserDetail matches={matches} users={users} />} />
 				<Route path="/matches" element={<Matches matches={matches} deleteMatch={deleteMatch} />} />
 			</Routes>
