@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bulma/css/bulma.css';
+import './index.css';
 import './custom.scss';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
