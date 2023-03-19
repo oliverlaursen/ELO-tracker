@@ -9,12 +9,20 @@ router.post('/', async function (req, res, next) {
     // Get the current match list
     const data = await fs.promises.readFile('data/matches.json', 'utf8');
     const matches = JSON.parse(data);
+    const { player1, player2, player1Goals, player2Goals } = req.body;
+
+    // Get elo and elochange
+    const [p1elo, p2elo] = await elo_calc.getPlayerElos(player1, player2);
+    const [p1elochange, p2elochange] = elo_calc.calcNewElo(p1elo, p2elo, parseInt(player1Goals), parseInt(player2Goals));
 
     // Add the new match
-    const { player1, player2, player1Goals, player2Goals } = req.body;
     matches.push({
       player1,
       player2,
+      player1Elo:p1elo,
+      player2Elo:p2elo,
+      player1EloChange:p1elochange,
+      player2EloChange:p2elochange,
       player1Goals: parseInt(player1Goals),
       player2Goals: parseInt(player2Goals),
       timestamp: Date.now()
@@ -22,8 +30,6 @@ router.post('/', async function (req, res, next) {
     await fs.promises.writeFile('data/matches.json', JSON.stringify(matches));
 
     // Update elos
-    const [p1elo, p2elo] = await elo_calc.getPlayerElos(player1, player2);
-    const [p1elochange, p2elochange] = elo_calc.calcNewElo(p1elo, p2elo, parseInt(player1Goals), parseInt(player2Goals));
     await elo_calc.updatePlayersElo(player1, player2, p1elochange, p2elochange);
 
     // Send response
