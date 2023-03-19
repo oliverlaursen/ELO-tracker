@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+
 const PUBLIC_IP = "84.238.79.88";
 
 function GoalSlider(props) {
@@ -66,7 +67,7 @@ function AddMatch({ setShowMatchForm, users }) {
 	const [player2Goals, setPlayer2Goals] = useState(0);
 	const match = {
 		player1: player1,
-		player2, player2,
+		player2: player2,
 		player1Goals: player1Goals,
 		player2Goals: player2Goals
 	}

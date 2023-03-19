@@ -7,6 +7,7 @@
 /.pnp
 .pnp.js
 /client/build
+/api/data
 
 # testing
 /coverage
