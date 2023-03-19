@@ -29,7 +29,7 @@ function AddUser() {
 		name: name,
 		gamesWon: 0,
 		gamesLost: 0,
-		rating: rating
+		rating: parseInt(rating)
 	};
 
 	const handleSubmit = async (e) => {
