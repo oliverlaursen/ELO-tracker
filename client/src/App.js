@@ -259,13 +259,13 @@ function UserDetail({ matches, users }) {
 }
 
 const fetchUsers = async (setUsers) => {
-	await fetch("http://" + PUBLIC_IP + ":9000/users")
+	await fetch("http://" + PUBLIC_IP + ":9000/api/users")
 		.then((res) => res.json())
 		.then((data) => setUsers(data))
 }
 
 const removeUser = async (name) => {
-	await fetch("http://" + PUBLIC_IP + ":9000/removeUser", {
+	await fetch("http://" + PUBLIC_IP + ":9000/api/removeUser", {
 		method: "POST",
 		headers: { "Content-Type": "application/json", },
 		body: JSON.stringify({ name })
@@ -275,7 +275,7 @@ const removeUser = async (name) => {
 }
 
 const addUser = async (user) => {
-	await fetch("http://" + PUBLIC_IP + ":9000/addUser", {
+	await fetch("http://" + PUBLIC_IP + ":9000/api/addUser", {
 		method: "POST",
 		headers: { "Content-Type": "application/json", },
 		body: JSON.stringify(user)
@@ -285,13 +285,13 @@ const addUser = async (user) => {
 }
 
 const fetchMatches = async (setMatches) => {
-	await fetch("http://" + PUBLIC_IP + ":9000/matches")
+	await fetch("http://" + PUBLIC_IP + ":9000/api/matches")
 		.then((res) => res.json())
 		.then((data) => setMatches(data))
 }
 
 const addMatch = async (match) => {
-	await fetch("http://" + PUBLIC_IP + ":9000/addMatch", {
+	await fetch("http://" + PUBLIC_IP + ":9000/api/addMatch", {
 		method: "POST",
 		headers: { "Content-Type": "application/json", },
 		body: JSON.stringify(match)
@@ -301,7 +301,7 @@ const addMatch = async (match) => {
 }
 
 const removeMatch = async (timestamp) => {
-	await fetch("http://" + PUBLIC_IP + ":9000/removeMatch", {
+	await fetch("http://" + PUBLIC_IP + ":9000/api/removeMatch", {
 		method: "POST",
 		headers: { "Content-Type": "application/json", },
 		body: JSON.stringify({ timestamp })
@@ -309,7 +309,6 @@ const removeMatch = async (timestamp) => {
 		.then((response) => response.json())
 		.catch((error) => console.error(error));
 }
-
 
 function App() {
 	const [users, setUsers] = useState([])
