@@ -1,7 +1,13 @@
 import { BrowserRouter, Routes, Route, Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+// Enable top-level-await experiment
 
-const PUBLIC_IP = "84.238.79.88";
+async function getIPAddress() {
+    const response = await fetch('https://api.ipify.org?format=json');
+    const data = await response.json();
+    return data.ip;}
+
+const PUBLIC_IP = await getIPAddress()
 
 function GoalSlider(props) {
 	const handleChange = (event) => {
@@ -315,6 +321,7 @@ function App() {
 	const [users, setUsers] = useState([])
 	const [isActive, setIsActive] = useState(false);
 	const [matches, setMatches] = useState([]);
+	
 
 	useEffect(() => {
 		fetchUsers(setUsers);
