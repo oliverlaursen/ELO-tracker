@@ -198,6 +198,7 @@ function Users({ users, setUsers }) {
 
 function MatchDetails({ match, setMatches }) {
 	let date = new Date(match.timestamp)
+
 	const handleDeleteClick = async (e) => {
 		e.preventDefault();
 		await removeMatch(match.timestamp);
@@ -209,7 +210,18 @@ function MatchDetails({ match, setMatches }) {
 			<div className='columns is-mobile is-vcentered'>
 				<div className='column'>
 					<div>
-						<p>{match.player1} VS {match.player2}</p>
+						<div className='level-item level-left'>
+							<p>{match.player1} ({match.player1Elo})</p>
+							<span className={`${match.player1EloChange >= 0 ? 'has-text-success' : 'has-text-danger'}`}>
+								{match.player1EloChange >= 0 ? '+' : ''}{match.player1EloChange}
+							</span>
+						</div>
+						<div className='level-item level-left'>
+							<p>{match.player2} ({match.player2Elo})</p>
+							<span className={`${match.player2EloChange >= 0 ? 'has-text-success' : 'has-text-danger'}`}>
+								{match.player2EloChange >= 0 ? '+' : ''}{match.player2EloChange}
+							</span>
+						</div>
 						<p>Score: {match.player1Goals + " - " + match.player2Goals}</p>
 						<p>{date.getHours() + ":" + date.getMinutes() + ", " + date.toDateString()}</p>
 					</div>
