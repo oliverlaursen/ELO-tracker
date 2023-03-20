@@ -184,7 +184,7 @@ function Users({ users, setUsers }) {
 		<div>
 			<h1 className='title has-text-centered'>Users</h1>
 			<ul className='is-multiline'>
-				{users.sort((a,b) => a.rating-b.rating).reverse().map(user => (
+				{users.sort((a,b) => b.rating-a.rating).map(user => (
 					<li key={user.name} className='box'>
 						<div className='columns is-mobile is-vcentered'>
 							<div className='column'>
