@@ -9,8 +9,8 @@ async function getIPAddress() {
 	return data.ip;
 }
 
-//const PUBLIC_IP = await getIPAddress()
-const PUBLIC_IP = "localhost"
+const PUBLIC_IP = await getIPAddress()
+//const PUBLIC_IP = "localhost"
 
 function GoalSlider(props) {
 	const handleChange = (event) => {
