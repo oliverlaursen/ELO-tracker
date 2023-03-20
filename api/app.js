@@ -12,6 +12,7 @@ var removeUser = require("./routes/removeUser")
 var matches = require("./routes/matches")
 var addMatch = require("./routes/addMatch")
 var removeMatch = require("./routes/removeMatch")
+var recalcAllElos = require("./routes/recalcAllElos")
 var app = express();
 
 const cors=require("cors");
@@ -45,6 +46,7 @@ app.use("/api/removeUser",removeUser);
 app.use("/api/matches", matches);
 app.use("/api/addMatch",addMatch);
 app.use("/api/removeMatch", removeMatch);
+app.use("/api/recalcAllElos", recalcAllElos);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

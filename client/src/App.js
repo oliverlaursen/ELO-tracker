@@ -144,12 +144,18 @@ function Home({ users }) {
 	const [showUserForm, setShowUserForm] = useState(false);
 	const [showMatchForm, setShowMatchForm] = useState(false);
 
+	const handleRecalc = (e) => {
+		e.preventDefault();
+		recalcAllElos();
+	}
+
 	return (
 		<div>
 			<button className='button' onClick={() => setShowMatchForm(!showMatchForm)}>Add match</button>
 			{showMatchForm && <AddMatch setShowMatchForm={setShowMatchForm} users={users} />}
 			<button className='button' onClick={() => setShowUserForm(!showUserForm)}>Add user</button>
 			{showUserForm && <AddUser />}
+			<button className='button' onClick={handleRecalc}>Recalculate All Elos</button>
 		</div>
 	);
 }
@@ -334,6 +340,16 @@ const removeMatch = async (timestamp) => {
 		method: "POST",
 		headers: { "Content-Type": "application/json", },
 		body: JSON.stringify({ timestamp })
+	})
+		.then((response) => response.json())
+		.catch((error) => console.error(error));
+}
+
+const recalcAllElos = async () => {
+	await fetch("http://" + PUBLIC_IP + ":9000/api/recalcAllElos")
+	.then((res) => res.json(), {
+		method:"POST",
+		headers: {"Content-Type":"application/json",}
 	})
 		.then((response) => response.json())
 		.catch((error) => console.error(error));
