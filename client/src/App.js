@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-// Enable top-level-await experiment
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 
 async function getIPAddress() {
 	const response = await fetch('https://api.ipify.org?format=json');
@@ -184,7 +185,7 @@ function Users({ users, setUsers }) {
 		<div>
 			<h1 className='title has-text-centered'>Users</h1>
 			<ul className='is-multiline'>
-				{users.sort((a,b) => b.rating-a.rating).map(user => (
+				{users.sort((a, b) => b.rating - a.rating).map(user => (
 					<li key={user.name} className='box'>
 						<div className='columns is-mobile is-vcentered'>
 							<div className='column'>
@@ -250,6 +251,13 @@ function MatchDetails({ match, setMatches }) {
 function UserDetail({ matches, users }) {
 	const { name } = useParams(); // get the "name" parameter from the URL
 	const user = users.find(u => u.name === name);
+	const games = matches.filter((game) => game.player1 === name || game.player2 === name)
+	games.map(g => g.date = new Date(g.timestamp).getDate())
+	games.map(g => {
+		if(g.player1 === name){g.elo = g.player1Elo}
+		else if(g.player2 === name){g.elo = g.player2Elo}
+	})
+	games.sort((a,b) => a.timestamp - b.timestamp)
 
 	if (!user) {
 		return <p>User not found</p>;
@@ -263,8 +271,16 @@ function UserDetail({ matches, users }) {
 				<span className='has-text-danger'>{user.gamesLost}</span>)
 			</h2>
 
+			<LineChart width={500} height={300} data={games}>
+				<XAxis dataKey="date" />
+				<YAxis />
+				<CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+				<Line type="monotone" dataKey="elo" stroke="#8884d8" />
+			</LineChart>
+
+
 			<h2 className='subtitle'>Match history</h2>
-			{matches.filter((game) => game.player1 === name || game.player2 === name).map(game => (
+			{games.map(game => (
 				<MatchDetails key={game.timestamp} match={game} />
 			))}
 		</div>

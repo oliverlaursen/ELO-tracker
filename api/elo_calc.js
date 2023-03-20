@@ -21,7 +21,7 @@ function calcEloChange(p1elo, p2elo, p1goals, p2goals) {
     const p1eloChange = Math.round(kFactor * (actualScoreP1 - expectedScoreP1)); // Elo change for player 1
     const p2eloChange = Math.round(kFactor * (actualScoreP2 - expectedScoreP2)); // Elo change for player 2
 
-    return [p1eloChange, p2eloChange]; // Return tuple containing the elo changes (with opposite sign for player 2)
+    return [p1eloChange, p2eloChange]; // Return tuple containing the elo changes
 }
 
 
