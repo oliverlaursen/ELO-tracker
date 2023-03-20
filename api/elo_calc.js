@@ -12,7 +12,7 @@ const fs = require('fs');
 function calcEloChange(p1elo, p2elo, p1goals, p2goals) {
     const kFactor = 128; // K-factor determines how much Elo rating changes after a match
 
-    const expectedScoreP1 = 1 / (1 + 10 ** ((p2elo - p1elo) / 400)); // Expected score of player 1
+    const expectedScoreP1 = 1 / (1 + 10 ** ((p2elo - p1elo) / 1500)); // Expected score of player 1
     const expectedScoreP2 = 1 - expectedScoreP1; // Expected score of player 2
 
     const actualScoreP1 = p1goals / (p1goals + p2goals); // Actual score of player 1
