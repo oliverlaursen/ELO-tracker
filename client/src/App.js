@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 // Enable top-level-await experiment
 
 async function getIPAddress() {
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    return data.ip;}
+	const response = await fetch('https://api.ipify.org?format=json');
+	const data = await response.json();
+	return data.ip;
+}
 
-const PUBLIC_IP = await getIPAddress()
+//const PUBLIC_IP = await getIPAddress()
+const PUBLIC_IP = "localhost"
 
 function GoalSlider(props) {
 	const handleChange = (event) => {
@@ -171,9 +173,11 @@ function Users({ users, setUsers }) {
 
 	const handleRemoveUser = async (e) => {
 		e.preventDefault();
-		let user = e.target.dataset.value;
-		await removeUser(user);
-		await fetchUsers(setUsers);
+		if (window.confirm("Are you sure you want to delete?")) {
+			let user = e.target.dataset.value;
+			await removeUser(user);
+			await fetchUsers(setUsers);
+		}
 	}
 
 	return (
@@ -208,8 +212,10 @@ function MatchDetails({ match, setMatches }) {
 
 	const handleDeleteClick = async (e) => {
 		e.preventDefault();
-		await removeMatch(match.timestamp);
-		await fetchMatches(setMatches)
+		if (window.confirm("Are you sure you want to delete?")) {
+			await removeMatch(match.timestamp);
+			await fetchMatches(setMatches)
+		}
 	};
 
 	return (
@@ -321,7 +327,7 @@ function App() {
 	const [users, setUsers] = useState([])
 	const [isActive, setIsActive] = useState(false);
 	const [matches, setMatches] = useState([]);
-	
+
 
 	useEffect(() => {
 		fetchUsers(setUsers);
