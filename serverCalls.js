@@ -5,7 +5,7 @@ async function getIPAddress() {
 }
 
 const PUBLIC_IP = await getIPAddress()
-const PORT = 3000;
+const PORT = 0;
 const API_ADDRESS = `https://${PUBLIC_IP}${PORT===0 ? '' : ':'+PORT}/api`
 
 async function fetchUsers() {
