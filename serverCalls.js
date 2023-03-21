@@ -4,7 +4,7 @@ async function getIPAddress() {
   return data.ip;
 }
 
-const PUBLIC_IP = await getIPAddress()
+const PUBLIC_IP = "elo-tracker-production.up.railway.app"
 const PORT = 0;
 const API_ADDRESS = `https://${PUBLIC_IP}${PORT===0 ? '' : ':'+PORT}/api`
 
