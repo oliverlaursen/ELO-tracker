@@ -4,19 +4,19 @@ async function getIPAddress() {
   return data.ip;
 }
 
-//const PUBLIC_IP = await getIPAddress()
-const PUBLIC_IP = "localhost"
+const PUBLIC_IP = await getIPAddress()
 const PORT = 3000;
+const API_ADDRESS = `https://${PUBLIC_IP}/api`
 
 async function fetchUsers() {
-  const res = await fetch(`http://${PUBLIC_IP}:${PORT}/api/users`);
+  const res = await fetch(`${API_ADDRESS}/users`);
   const data = await res.json();
   return data;
 }
 
 
 async function removeUser(name){
-  await fetch(`http://${PUBLIC_IP}:${PORT}/api/removeUser`, {
+  await fetch(`${API_ADDRESS}/removeUser`, {
     method: "POST",
     headers: { "Content-Type": "application/json", },
     body: JSON.stringify({ name })
@@ -26,7 +26,7 @@ async function removeUser(name){
 }
 
 async function addUser(user) {
-  await fetch(`http://${PUBLIC_IP}:${PORT}/api/addUser`, {
+  await fetch(`${API_ADDRESS}}/addUser`, {
     method: "POST",
     headers: { "Content-Type": "application/json", },
     body: JSON.stringify(user)
@@ -36,13 +36,13 @@ async function addUser(user) {
 }
 
 async function fetchMatches() {
-  const res = await fetch(`http://${PUBLIC_IP}:${PORT}/api/matches`);
+  const res = await fetch(`${API_ADDRESS}/matches`);
   const data = await res.json();
   return data;
 }
 
 async function addMatch(match) {
-  await fetch(`http://${PUBLIC_IP}:${PORT}/api/addMatch`, {
+  await fetch(`${API_ADDRESS}/addMatch`, {
     method: "POST",
     headers: { "Content-Type": "application/json", },
     body: JSON.stringify(match)
@@ -52,7 +52,7 @@ async function addMatch(match) {
 }
 
 async function removeMatch(timestamp) {
-  await fetch(`http://${PUBLIC_IP}:${PORT}/api/removeMatch`, {
+  await fetch(`${API_ADDRESS}/removeMatch`, {
     method: "POST",
     headers: { "Content-Type": "application/json", },
     body: JSON.stringify({ timestamp })
@@ -62,7 +62,7 @@ async function removeMatch(timestamp) {
 }
 
 async function recalcAllElos() {
-  await fetch(`http://${PUBLIC_IP}:${PORT}/api/recalcAllElos`)
+  await fetch(`${API_ADDRESS}/recalcAllElos`)
     .then((res) => res.json(), {
       method: "POST",
       headers: { "Content-Type": "application/json", }
